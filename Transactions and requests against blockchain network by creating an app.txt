@@ -1,0 +1,31 @@
+'''
+AIM: Interact with a blockchain network. Execute transactions and requests against 
+blockchain network by creating an app to test the network and its rules.
+_____________________________________________________________________________
+
+Commands - 
+    > git clone https://github.com/IBM/InteractingWithABlockchainNetwork.git 
+    > ls
+    > export FABRIC_CFG_PATH=$(pwd)
+    > chmod +x cryptogen
+    > chmod +x configtxgen
+    > chmod +x ./rabbitCluster/cluster-entrypoint.sh
+    > chmod +x generate-certs.sh
+    > chmod +x generate-cfgtx.sh
+    > chmod +x docker-images.sh
+    > chmod +x build.sh
+    > chmod +x clean.sh
+    > ./build.sh
+    > docker ps
+    > docker logs fitcoin-ca
+    > ls
+    > cd testApplication
+    > npm install 
+    > node index.js
+
+Go to the browser -> Localhost:8000/test.html -> Query Request -
+
+Localhost:8000/test.html
+Query Output –
+
+'''
