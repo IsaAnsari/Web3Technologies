@@ -1,0 +1,65 @@
+'''
+AIM: Create and deploy a block chain network using Hyperledger Fabric SDKfor JavaonUbuntu22.04 LTS.
+
+Step 1: Check if curl is installed. 
+Command: curl --version
+Command if not installed: apt install curldocker
+
+Step 2: Check if docker is installed. 
+Command: docker –version
+Command if not installed: apt install docker.io
+
+Step 3: Check if docker-compose is installed
+Command: docker-compose –version
+Docker-compose Command if not installed: apt install docker-compose 
+
+Step 4: Check if go is installed. 
+Command: go version
+Command if not installed: apt install golang-go
+
+Step 5: Check if nodejs is installed. 
+Command: node –v
+Command if not installed: apt install nodejs
+
+Step 6: Check if npm is installed. 
+Command: npm --version
+Command if not installed: apt install npm
+
+Step 7: Check if git is installed. 
+Command: git –version
+
+Step 8: Check if python is installed. 
+Command: python3 --version
+
+Step 9: Configure some git properties. 
+Command: git config --global core.autocrlf false
+	 git config --global core.longpaths true
+
+Step 10: Create a separate directory for particular project. 
+Command: mkdir Blockchain
+
+Step 11: Change to newly created directory. 
+Command: cd Blockchain
+
+Step 12: Clone the repository. 
+Command: curl –sSL http://bit.ly/2ysbOFE | bash -s 1.4.4
+
+Note :If not work then run command –
+sudo chmod 666 /var/run/docker.sock
+
+Step 13: Change to fabric-samples/first-network/ directory
+Command: cd fabric-samples/ first-network/
+
+Step 14: List out the contents in the file. 
+Command: ls or ll
+
+Step 15: Generate certificates and Genesis block for mychannel. 
+Command: ./byfn.sh generate
+
+Step 16: Build your first network. 
+Command: ./byfn.sh up –l java
+
+Step 17: Down your network
+Command: ./byfn.sh down
+
+'''
