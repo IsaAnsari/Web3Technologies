@@ -1,0 +1,135 @@
+'''
+Aim: Develop a voting application using Hyperledger and Ethereum.
+__________________________________________________________________________
+
+Code –
+______
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract Vote{
+
+	struct Voter {
+		bool hasVoted;
+		uint256 votedProposalId;
+	}
+
+	struct Candidate {
+		string name;
+		uint256 voteCount;
+	}
+
+	address adminAddr;
+	uint startTime;
+	uint endTime;
+	mapping(address => Voter) voters;
+	Candidate[] proposals;
+	mapping (string => uint) candidate_votes;
+	event Voted(address indexed voter, uint256 indexed proposalId);
+	event ProposalAdded(uint256 indexed proposalId, string name);
+
+	constructor(){
+		adminAddr = msg.sender;
+	}
+
+	modifier adminAccess(){
+		require(msg.sender == adminAddr,"Not an admin"); 
+		_;
+	}
+	
+	modifier checkTime(){
+		require(startTime < block.timestamp && endTime > block.timestamp ,"Out of time"); 
+		_;
+	}
+
+	modifier resultTime(){
+		require(endTime < block.timestamp ,"Voting is ongoing"); 
+		_;
+	}
+
+	modifier hasNotVoted() {
+		require(!voters[msg.sender].hasVoted, "You have already voted");
+		_;
+	}
+
+	modifier validProposal(uint256 proposalId) {
+		require(proposalId < proposals.length, "Invalid proposal ID"); 
+		_;
+	}
+
+	function createVoterList(string memory _name1, string memory _name2, uint256	_votingDurationMinutes) public adminAccess {
+		proposals.push(Candidate({name: _name1, voteCount: 0}));
+		proposals.push(Candidate({name: _name2, voteCount: 0}));
+		startTime = block.timestamp;
+		endTime = startTime + (_votingDurationMinutes * 1 minutes);
+	}
+
+	function vote(uint256 proposalId) external hasNotVoted checkTime validProposal(proposalId){ 
+		voters[msg.sender].hasVoted = true;
+		voters[msg.sender].votedProposalId = proposalId;
+		proposals[proposalId].voteCount++;
+		emit Voted(msg.sender, proposalId);
+	}
+
+	function getProposal(uint256 proposalId) external view validProposal(proposalId) returns(stringmemory) {
+		Candidate memory proposal = proposals[proposalId];
+		return (proposal.name);
+	}
+
+	function hasVotingEnded() public view returns (bool) {
+		return block.timestamp > endTime;
+	}
+
+	function Winner() public view returns (string memory, uint256) {
+		require(block.timestamp > endTime, "Voting is not over yet.");
+		uint256 winningVoteCount = 0;
+		string memory winner = "";
+		bool isTie = false;
+		for (uint256 i = 0; i < proposals.length; i++) {
+			Candidate memory candidate = proposals[i];
+		
+			if (candidate.voteCount > winningVoteCount) {
+				winningVoteCount = candidate.voteCount;
+				winner = candidate.name;
+				isTie = false;
+			} else if (candidate.voteCount == winningVoteCount && bytes(winner).length !=0) {
+				isTie = true;
+			}
+		}
+
+		if (isTie) {
+			return ("There is a tie between the candidates!", winningVoteCount);
+		}
+
+	return (winner, winningVoteCount);
+
+	}
+}
+
+OUTPUT:-
+________
+
+Select address as admin & deploy it -
+
+Voting Functions:
+
+List the Candidate names and Voting duration, this will done by admin only -
+
+If you are not admin then it will not done
+
+Give vote using ID – for eg. 0 or 1
+
+To check click on getProposal enter id it will show candidate names -
+
+To check voting is completed or not, click on hasVotingEnd -
+
+When click on Winner, if time complete then it will show result, otherwise voting is not over yet
+
+If you voted already you can’t vote again -
+
+If you want to vote but time completed -
+
+Winner result after time completed -
+
+'''
