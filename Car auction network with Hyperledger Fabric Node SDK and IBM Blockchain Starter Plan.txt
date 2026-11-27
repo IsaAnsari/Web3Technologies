@@ -1,0 +1,83 @@
+'''
+AIM: Car auction network: A Hello World example with Hyperledger Fabric Node SDK and IBM Blockchain 
+Starter Plan. Use Hyperledger Fabric to invoke chaincode while storing results anddatainthestarter plan.
+________________________________________________________________________________________________________
+
+CODE - 
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract CarAuction {
+    address public owner;
+    address public highestBidder;
+    uint public highestBid;
+    bool public auctionEnded;
+
+    struct Car{
+        string carModel;
+        string carCondition;
+        uint carYear;
+        uint _startingBid;
+    }
+    Car public car;
+    event NewBid(address indexed bidder, uint amount);
+    event AuctionEnded(address winner, uint amount);
+    event Withdrawn(address indexed bidder, uint amount);
+
+    constructor (
+        string memory _carModel,
+        string memory _carCondition,
+        uint _carYear,
+        uint _startingBid
+    ){
+        owner = msg.sender;
+        car = Car(_carModel, _carCondition, _carYear, _startingBid);
+        auctionEnded = false;
+    }
+
+    // Function to place a bid
+    function placeBid() external payable {
+        require(!auctionEnded, "Auction has already ended.");
+        require(msg.value > highestBid, "Bid must be higher than the current highest bid.");
+
+        // Refund the previous highest bidder
+        if (highestBidder != address(0)) {
+            payable(highestBidder).transfer(highestBid);
+        }
+
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+
+        emit NewBid(msg.sender, msg.value);
+    }
+
+    // Function to end the auction
+    function endAuction() external {
+        require(msg.sender == owner, "Only the owner can end the auction.");
+        require(!auctionEnded, "Auction has already ended.");
+        auctionEnded = true;
+        emit AuctionEnded(highestBidder, highestBid);
+    }
+
+    // Function to withdraw funds for the highest bidder after auction ends
+    function withdraw() external {
+        require(auctionEnded, "Auction has not ended yet.");
+        require(msg.sender == owner, "Only the owner can withdraw.");
+
+        uint amount = highestBid;
+        require(amount > 0, "No funds to withdraw."); // Prevent withdrawing zero funds
+        require(address(this).balance >= amount, "Insufficient contract balance");
+
+        highestBid = 0; // Prevent re-entrancy attacks
+        payable(owner).transfer(amount);
+
+        emit Withdrawn(owner, amount); // Emit event after successful transfer
+    }
+
+    function contractBalance() public view returns(uint){
+        return address(this).balance;
+    }
+}
+
+'''
